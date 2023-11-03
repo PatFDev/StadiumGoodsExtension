@@ -23,8 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch("https://sellers.stadiumgoods.com/graphql", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "x-api-key": "ef2e1c5ca3cf3b729c7a1c05666a0e062aca2090a8a5ab5b42f700aac4a9654e" 
+        "Content-Type": "application/json
       },
       body: JSON.stringify(graphqlQuery),
       credentials: "include"
