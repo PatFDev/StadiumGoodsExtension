@@ -1,0 +1,16 @@
+{
+    "manifest_version": 3,
+    "name": "Stadium Goods Data Fetcher",
+    "version": "1.0",
+    "permissions": ["storage", "activeTab", "scripting"],
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "host_permissions": [
+      "https://sellers.stadiumgoods.com/*"
+    ]
+  }
+  
