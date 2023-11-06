@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Stadium Goods Data Fetcher",
     "version": "1.1",
-    "permissions": ["storage", "activeTab", "scripting"],
+    "permissions": ["storage", "activeTab", "scripting", "tabs"],
     "action": {
       "default_popup": "popup.html"
     },

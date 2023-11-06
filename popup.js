@@ -1,12 +1,106 @@
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('searchButton').addEventListener('click', function () {
-      const searchTerm = document.getElementById('searchInput').value;
-      if (searchTerm) {
-        fetchData(searchTerm);
-      }
-    });
+document.addEventListener('DOMContentLoaded', () => {
+  const loginButton = document.getElementById('loginButton');
+  const searchButton = document.getElementById('searchButton');
+  const lowerPricesButton = document.getElementById('lowerPricesButton');
+  const searchInput = document.getElementById('searchInput');
+
+  loginButton.addEventListener('click', () => {
+    chrome.tabs.create({ url: 'https://sellers.stadiumgoods.com/' });
   });
 
+  searchButton.addEventListener('click', () => {
+    const searchTerm = searchInput.value;
+    if (searchTerm) {
+      fetchData(searchTerm);
+    }
+  });
+
+  lowerPricesButton.addEventListener('click', async () => {
+    const hasOverprices = await getOverpriced();
+    console.log(`BOOLEAN ${hasOverprices}`);
+    if (hasOverprices) {
+      await lowerPrices();
+    }
+  });
+});
+
+
+  async function getOverpriced() {
+    try {
+      const response = await fetch("https://sellers.stadiumgoods.com/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          'query': 'query PriceDropsDrawerRendererQuery(\n  $query: String\n  $health: InventoryHealthFilterEnum\n  $lastSoldAt: VariantLastSoldAtFilterEnum\n  $newerThan: Int\n  $olderThan: Int\n  $percentAwayFromLowestPrice: PercentAwayFromLowestPriceEnum\n  $pricingStatus: InventoryUnitPricingStatusEnum\n  $willIncurAgedInventoryFee: Boolean\n) {\n  ...PriceDropsDrawerContainerQuery_query_nK8j9\n}\n\nfragment PriceDropsDrawerContainerQuery_query_nK8j9 on Query {\n  viewer {\n    priceDropInventoryAggregates(filters: {query: $query, health: $health, inStock: true, lastSoldAt: $lastSoldAt, newerThan: $newerThan, olderThan: $olderThan, percentAwayFromLowestPrice: $percentAwayFromLowestPrice, pricingStatus: $pricingStatus, willIncurAgedInventoryFee: $willIncurAgedInventoryFee}) {\n      currentValue\n      inventoryCount\n      newValue\n    }\n    id\n  }\n}\n',
+          'variables': {
+              'query': ' ',
+              'health': null,
+              'lastSoldAt': null,
+              'newerThan': null,
+              'olderThan': null,
+              'percentAwayFromLowestPrice': null,
+              'pricingStatus': null,
+              'willIncurAgedInventoryFee': null
+          }
+      }),
+        credentials: "include"
+      });
+      
+      const data = await response.json();
+  
+      
+      if (data.data.viewer.priceDropInventoryAggregates && data.data.viewer.priceDropInventoryAggregates.inventoryCount > 0) {
+        console.log("FOUND OVERPRICED SHOE");
+        lowerPricesButton.innerText = "Lowering Prices...";
+        return true;
+      } else {
+        console.log("NO OVERPRICED");
+        lowerPricesButton.innerText = "No Overpriced...";
+        lowerPricesButton.style.backgroundColor = "#cccccc";
+        return false;
+      }
+    } catch (error) {
+      console.error("ERROR IN getOverpriced:", error);
+      lowerPricesButton.innerText = "Please Login";
+      return false; 
+    }
+  }
+  
+  async function lowerPrices(){
+    fetch("https://sellers.stadiumgoods.com/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        'query': 'mutation Mutations_MatchAllPricesMutation(\n  $input: MatchAllPricesMutationInput!\n) {\n  matchAllPrices(input: $input) {\n    clientMutationId\n    success\n  }\n}\n',
+        'variables': {
+            'input': {
+                'filters': {
+                    'health': null,
+                    'lastSoldAt': null,
+                    'newerThan': null,
+                    'olderThan': null,
+                    'percentAwayFromLowestPrice': null,
+                    'query': ''
+                }
+            }
+        }
+    }),
+      credentials: "include"
+    })
+    .then(response => response.json())
+    .then(data => {
+        lowerPricesButton.innerText = data.data.success;
+    })
+    .catch(error => {
+      lowerPricesButton.innerText = "Please Login"
+      console.log(error)
+    });
+
+  }
 
   function fetchData(searchTerm) {
     const graphqlQuery = {
@@ -73,6 +167,8 @@ function displayData(data) {
   
     tableHTML += '</table>';
     document.getElementById('data').innerHTML = productDetailsHTML + tableHTML;
+  
   }
+
   
   
