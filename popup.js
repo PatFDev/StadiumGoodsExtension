@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(response => response.json())
     .then(data => {
-        lowerPricesButton.innerText = data.data.success;
+        lowerPricesButton.innerText = "Success!";
     })
     .catch(error => {
       lowerPricesButton.innerText = "Please Login"
