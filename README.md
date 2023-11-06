@@ -2,6 +2,8 @@
 
 This Chrome extension is designed to enhance the user experience of selling on [StadiumGoods.com](https://www.stadiumgoods.com/) by displaying the last sale date and last sale price of products—information that is not typically visible on the website. This can provide valuable insights for users looking to understand market trends and product value over time.
 
+# PLEASE MAKE SURE YOU ARE LOGGED IN ON STADIUM GOODS SELLER PORTAL BY CLICKING THE "LOGIN" BUTTON
+
 ## Features
 
 - **Last Sale Date**: Quickly view when the last transaction occurred for a particular product.
